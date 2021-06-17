@@ -19,7 +19,7 @@
             </div>
             <div class="field">
                 <label>Share Link:</label>
-                <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;"  />
+                <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;" />
             </div>
         </form>
         <form class="lock hidden">
@@ -29,7 +29,7 @@
             </div>
             <button type="submit">Lock</button>
             <div class="field"><label>Share Link:</label>
-                <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;"  />
+                <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;" />
             </div>
         </form>
         <form class="unlock hidden">
@@ -44,6 +44,7 @@
         </form>
         <footer><b>Secrets should be secrets and <u>not</u> be saved on a server</b></footer>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/node-vibrant@3.2.1-alpha.1/dist/vibrant.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl-fast.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/secure-random@1.1.2/lib/secure-random.js"></script>
     <script>
@@ -51,6 +52,14 @@
             return btoa(String.fromCharCode.apply(null, u8)).replace(/=/g, '');
         }
 
+        Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
+
+            let color = palette.DarkVibrant.rgb;
+            window.pallet = palette;
+            let style = document.createElement('style');
+            style.innerHTML = 'button { background-color: rgb(' + color.join(',') + '); }';
+            document.body.appendChild(style);
+        });
         FromBase64 = function (str) {
             return Uint8Array.from(atob(str.replace(/ /g, '+')).split('').map(function (c) { return c.charCodeAt(0); }));
         }
@@ -106,39 +115,49 @@
             padding: 0;
             margin: 0;
         }
+
         body {
             background-image: url('https://picsum.photos/1920/1080');
             background-size: cover;
             min-height: 100vh;
         }
+
         body,
-        input, textarea {
+        input,
+        textarea {
             font-family: system-ui, -apple-system, BlinkMacSystemFont,
                 "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
                 "Fira Sans", "Droid Sans", "Helvetica Neue",
                 sans-serif;
             font-size: 14px;
         }
-        small { font-size: 12px; margin-bottom: 16px; margin-top: -8px; display: block; }
+
+        small {
+            font-size: 12px;
+            margin-bottom: 16px;
+            margin-top: -8px;
+            display: block;
+        }
+
         .hidden {
             display: none;
         }
-        
+
         form:before {
             content: '';
             display: block;
             position: absolute;
-   top: 175%;
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    filter: blur(5px);
-    left: 50%;
+            top: 175%;
+            -webkit-filter: blur(5px);
+            -moz-filter: blur(5px);
+            filter: blur(5px);
+            left: 50%;
             height: 100vh;
             width: 100vw;
             background-image: url('https://picsum.photos/1920/1080');
             background-size: cover;
             z-index: -1;
-    transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
         }
 
         form {
@@ -146,9 +165,9 @@
             max-width: 440px;
             overflow: hidden;
             width: calc(100% - 40px);
-            background: rgba(255,255,255,0.6);
+            background: rgba(255, 255, 255, 0.6);
             padding: 24px;
-            box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
             border-radius: 15px;
         }
 
@@ -164,10 +183,10 @@
         form {
             margin: 0 auto;
         }
-        
+
         h1 {
-            
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         footer {
@@ -175,11 +194,17 @@
             text-align: center;
             font-size: 12px;
             padding: 24px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-        textarea { min-height: 100px; max-width: 100%; min-width: 100%;
+
+        textarea {
+            min-height: 100px;
+            max-width: 100%;
+            min-width: 100%;
         }
-        .field input, .field textarea {
+
+        .field input,
+        .field textarea {
             width: 100%;
             margin: 4px 0 16px;
             font-size: 16px;
@@ -201,7 +226,6 @@
             padding: 8px;
             width: 100%;
             border: 0;
-            background-color: #5759cf;
             border-radius: 4px;
         }
 
@@ -210,7 +234,11 @@
         button:focus {
             opacity: 0.8;
         }
-        a {color: #fff; text-decoration: none; }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+        }
     </style>
 </body>
 
