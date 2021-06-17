@@ -12,6 +12,7 @@
     <div>
         <h1><a href="/">Private Key Ssshhh...</a></h1>
         <form class="request hidden">
+            <div class="before"></div>
             <h2>Request secret</h2>
             <div class="field"><label>Secret Key:</label>
                 <input type="text" class="secret" onfocus="this.select();" onmouseup="return false;" />
@@ -23,6 +24,7 @@
             </div>
         </form>
         <form class="lock hidden">
+            <div class="before"></div>
             <h2>Lock secret</h2>
             <div class="field"><label>Secret:</label>
                 <textarea class="secret"></textarea>
@@ -33,6 +35,7 @@
             </div>
         </form>
         <form class="unlock hidden">
+            <div class="before"></div>
             <h2>Unlock secret</h2>
             <div class="field"><label>Secret Key:</label>
                 <input type="text" class="secret" />
@@ -55,7 +58,6 @@
             let rgb = color.rgb
             return (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
         }
-
         Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
 
             let color = palette.Vibrant.rgb;
@@ -102,14 +104,32 @@
             })
 
         })()
-
+        let form = null;
         if (urlParams.has('s')) {
             document.querySelector('.unlock').classList.remove('hidden');
+            form = document.querySelector('.unlock');
         } else if (urlParams.has('p')) {
             theirPublicKey = urlParams.get('p');
             document.querySelector('.lock').classList.remove('hidden');
+            form = document.querySelector('.lock');
         } else {
             document.querySelector('.request').classList.remove('hidden');
+            form = document.querySelector('.request');
+        }
+        let rects = form.getBoundingClientRect();
+        form.querySelector('.before').style.left = (-rects.left) + 'px';
+        form.querySelector('.before').style.top = (-rects.top) + 'px';
+        document.addEventListener('DOMContentLoaded', () => {
+
+            let rects = form.getBoundingClientRect();
+            form.querySelector('.before').style.left = (-rects.left) + 'px';
+            form.querySelector('.before').style.top = (-rects.top) + 'px';
+        });
+        window.onresize = () => {
+            let rects = form.getBoundingClientRect();
+            form.querySelector('.before').style.left = (-rects.left) + 'px';
+            form.querySelector('.before').style.top = (-rects.top) + 'px';
+
         }
     </script>
     <style>
@@ -146,21 +166,17 @@
             display: none;
         }
 
-        form:before {
-            content: '';
+        form .before {
             display: block;
             position: absolute;
-            top: 175%;
-            -webkit-filter: blur(5px);
-            -moz-filter: blur(5px);
-            filter: blur(5px);
-            left: 50%;
+            -webkit-filter: blur(10px);
+            -moz-filter: blur(10px);
+            filter: blur(10px);
             height: 100vh;
             width: 100vw;
             background-image: url('https://picsum.photos/1920/1080');
             background-size: cover;
             z-index: -1;
-            transform: translate(-50%, -50%);
         }
 
         form {
@@ -168,10 +184,11 @@
             max-width: 440px;
             overflow: hidden;
             width: calc(100% - 40px);
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.4);
             padding: 24px;
             box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
+            border-radius: 24px;
+            text-align: center;
         }
 
         h1 {
