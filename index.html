@@ -122,8 +122,22 @@
         .hidden {
             display: none;
         }
+        
+        form:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            background-image: url('https://picsum.photos/1920/1080');
+            background-size: cover;
+            z-index: -1;
+        }
 
         form {
+            position: relative;
             max-width: 440px;
             width: calc(100% - 40px);
             background: rgba(255,255,255,0.6);
