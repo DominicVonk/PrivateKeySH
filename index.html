@@ -51,20 +51,25 @@
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         let theirPublicKey = '';
+        function yiq(color) {
+            let rgb = color.rgb
+            return (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+        }
+
+        Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
+
+            let color = palette.Vibrant.rgb;
+            window.pallet = palette;
+            let style = document.createElement('style');
+            style.innerHTML = 'button { background-color: rgb(' + color.join(',') + '); color: ' + (yiq(palette.Vibrant) < 150 ? '#fff' : '#000') + '; }';
+            document.body.appendChild(style);
+        });
         (async () => {
             await sodium.ready;
             ToBase64 = function (u8) {
                 return btoa(String.fromCharCode.apply(null, u8)).replace(/=/g, '');
             }
 
-            Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
-
-                let color = palette.DarkVibrant.rgb;
-                window.pallet = palette;
-                let style = document.createElement('style');
-                style.innerHTML = 'button { background-color: rgb(' + color.join(',') + '); }';
-                document.body.appendChild(style);
-            });
             FromBase64 = function (str) {
                 return Uint8Array.from(atob(str.replace(/ /g, '+')).split('').map(function (c) { return c.charCodeAt(0); }));
             }
