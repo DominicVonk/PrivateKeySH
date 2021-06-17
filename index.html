@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Key Ssshhh....</title>
+</head>
+
+<body>
+    <div>
+        <h1>Private Key Ssshhh...</h1>
+        <form class="request hidden">
+            <h2>Request secret</h2>
+            <div class="field"><label>Secret Key:</label>
+                <input type="text" class="secret" />
+            </div>
+            <div class="field">
+                <label>Share Link:</label>
+                <input type="text" class="output_url" />
+            </div>
+        </form>
+        <form class="lock hidden">
+            <h2>Lock secret</h2>
+            <div class="field"><label>Secret:</label>
+                <input type="text" class="secret" />
+            </div>
+            <button type="submit">Lock</button>
+            <div class="field"><label>Share Link:</label>
+                <input type="text" class="output_url" />
+            </div>
+        </form>
+        <form class="unlock hidden">
+            <h2>Unlock secret</h2>
+            <div class="field"><label>Secret Key:</label>
+                <input type="text" class="secret" />
+            </div>
+            <button type="submit">Unlock</button>
+            <div class="field"><label>Secret:</label>
+                <input type="text" class="output" />
+            </div>
+        </form>
+        <footer><b>Secrets should be secrets and <u>not</u> be saved on a server</b></footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl-fast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/secure-random@1.1.2/lib/secure-random.js"></script>
+    <script>
+        ToBase64 = function (u8) {
+            return btoa(String.fromCharCode.apply(null, u8)).replace(/=/g, '');
+        }
+
+        FromBase64 = function (str) {
+            return Uint8Array.from(atob(str.replace(/ /g, '+')).split('').map(function (c) { return c.charCodeAt(0); }));
+        }
+        let boxPair = nacl.box.keyPair();
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const myPrivateKey = ToBase64((boxPair.secretKey)).replace(/=/g, '');
+        const myPublicKey = ToBase64((boxPair.publicKey)).replace(/=/g, '');
+        let theirPublicKey = '';
+
+
+        document.querySelector('.request .secret').value = myPrivateKey;
+        document.querySelector('.request .output_url').value = location.protocol + '//' + location.host + '/?p=' + myPublicKey;
+
+        document.querySelector('.request').addEventListener('submit', (e) => {
+            e.preventDefault();
+        })
+        document.querySelector('.lock').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let nonce = secureRandom.randomUint8Array(24);
+            let theirPublic = FromBase64(theirPublicKey)
+            let box = nacl.box((new TextEncoder()).encode(document.querySelector('.lock .secret').value), nonce, theirPublic, boxPair.secretKey);
+
+
+            document.querySelector('.lock .output_url').value = location.protocol + '//' + location.host + '/?p=' + myPublicKey + '&n=' + ToBase64(nonce) + '&s=' + ToBase64(box);
+        })
+        document.querySelector('.unlock').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let secret = FromBase64(urlParams.get('s'));
+            let key = FromBase64(document.querySelector('.unlock .secret').value);
+            let theirPublic = FromBase64(theirPublicKey);
+            let nonce = FromBase64(urlParams.get('n'));
+
+            let box = nacl.box.open(secret, nonce, theirPublic, key);
+
+            document.querySelector('.unlock .output').value = (new TextDecoder()).decode(box);
+
+        })
+
+        if (urlParams.has('p') && urlParams.has('s')) {
+            theirPublicKey = urlParams.get('p');
+            document.querySelector('.unlock').classList.remove('hidden');
+        } else if (urlParams.has('p')) {
+            theirPublicKey = urlParams.get('p');
+            document.querySelector('.lock').classList.remove('hidden');
+        } else {
+            document.querySelector('.request').classList.remove('hidden');
+        }
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body,
+        input {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+                "Fira Sans", "Droid Sans", "Helvetica Neue",
+                sans-serif;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        form {
+            max-width: 400px;
+            background: #fff;
+            padding: 24px;
+            border-radius: 5px;
+        }
+
+        body {
+            background-color: #5759cf;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            font-size: 24px;
+            font-weight: normal;
+            padding: 24px;
+        }
+
+        h1,
+        form {
+            margin: 0 auto;
+        }
+
+        footer {
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+            padding: 24px;
+        }
+
+        .field input {
+            width: 100%;
+            margin: 4px 0 16px;
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        h2 {
+            margin-bottom: 16px;
+        }
+
+        button {
+            margin-bottom: 24px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            color: #fff;
+            padding: 8px;
+            width: 100%;
+            border: 0;
+            background-color: #5759cf;
+            border-radius: 4px;
+        }
+
+        button:active,
+        button:hover,
+        button:focus {
+            opacity: 0.8;
+        }
+    </style>
+</body>
+
+</html>
