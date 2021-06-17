@@ -24,7 +24,7 @@
         <form class="lock hidden">
             <h2>Lock secret</h2>
             <div class="field"><label>Secret:</label>
-                <input type="text" class="secret" />
+                <textarea class="secret"></textarea>
             </div>
             <button type="submit">Lock</button>
             <div class="field"><label>Share Link:</label>
@@ -38,7 +38,7 @@
             </div>
             <button type="submit">Unlock</button>
             <div class="field"><label>Secret:</label>
-                <input type="text" class="output" />
+                <textarea class="output"></textarea>
             </div>
         </form>
         <footer><b>Secrets should be secrets and <u>not</u> be saved on a server</b></footer>
@@ -107,7 +107,7 @@
         }
 
         body,
-        input {
+        input, textarea {
             font-family: system-ui, -apple-system, BlinkMacSystemFont,
                 "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
                 "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -150,8 +150,9 @@
             font-size: 12px;
             padding: 24px;
         }
-
-        .field input {
+        textarea { min-height: 100px;
+        }
+        .field input, .field textarea {
             width: 100%;
             margin: 4px 0 16px;
             font-size: 16px;
