@@ -45,62 +45,60 @@
         <footer><b>Secrets should be secrets and <u>not</u> be saved on a server</b></footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/node-vibrant@3.2.1-alpha.1/dist/vibrant.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl-fast.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/secure-random@1.1.2/lib/secure-random.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jedisct1/libsodium.js/dist/browsers/sodium.js"></script>
     <script>
-        ToBase64 = function (u8) {
-            return btoa(String.fromCharCode.apply(null, u8)).replace(/=/g, '');
-        }
 
-        Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
-
-            let color = palette.DarkVibrant.rgb;
-            window.pallet = palette;
-            let style = document.createElement('style');
-            style.innerHTML = 'button { background-color: rgb(' + color.join(',') + '); }';
-            document.body.appendChild(style);
-        });
-        FromBase64 = function (str) {
-            return Uint8Array.from(atob(str.replace(/ /g, '+')).split('').map(function (c) { return c.charCodeAt(0); }));
-        }
-        let boxPair = nacl.box.keyPair();
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const myPrivateKey = ToBase64((boxPair.secretKey)).replace(/=/g, '');
-        const myPublicKey = ToBase64((boxPair.publicKey)).replace(/=/g, '');
         let theirPublicKey = '';
+        (async () => {
+            await sodium.ready;
+            ToBase64 = function (u8) {
+                return btoa(String.fromCharCode.apply(null, u8)).replace(/=/g, '');
+            }
+
+            Vibrant.from('https://picsum.photos/1920/1080').getPalette(function (err, palette) {
+
+                let color = palette.DarkVibrant.rgb;
+                window.pallet = palette;
+                let style = document.createElement('style');
+                style.innerHTML = 'button { background-color: rgb(' + color.join(',') + '); }';
+                document.body.appendChild(style);
+            });
+            FromBase64 = function (str) {
+                return Uint8Array.from(atob(str.replace(/ /g, '+')).split('').map(function (c) { return c.charCodeAt(0); }));
+            }
+            let boxPair = sodium.crypto_box_keypair();
+            const myPrivateKey = ToBase64(boxPair.privateKey).replace(/=/g, '');
+            const myPublicKey = ToBase64(boxPair.publicKey).replace(/=/g, '');
 
 
-        document.querySelector('.request .secret').value = myPrivateKey;
-        document.querySelector('.request .output_url').value = location.protocol + '//' + location.host + '/?p=' + myPublicKey;
+            document.querySelector('.request .secret').value = myPrivateKey;
+            document.querySelector('.request .output_url').value = location.protocol + '//' + location.host + '/?p=' + myPublicKey;
 
-        document.querySelector('.request').addEventListener('submit', (e) => {
-            e.preventDefault();
-        })
-        document.querySelector('.lock').addEventListener('submit', (e) => {
-            e.preventDefault();
-            let nonce = secureRandom.randomUint8Array(24);
-            let theirPublic = FromBase64(theirPublicKey)
-            let box = nacl.box((new TextEncoder()).encode(document.querySelector('.lock .secret').value), nonce, theirPublic, boxPair.secretKey);
+            document.querySelector('.request').addEventListener('submit', (e) => {
+                e.preventDefault();
+            })
+            document.querySelector('.lock').addEventListener('submit', (e) => {
+                e.preventDefault();
+                let theirPublic = FromBase64(theirPublicKey)
+                let box = sodium.crypto_box_seal((new TextEncoder()).encode(document.querySelector('.lock .secret').value), theirPublic);
+                document.querySelector('.lock .output_url').value = location.protocol + '//' + location.host + '/?s=' + ToBase64(box);
+            })
+            document.querySelector('.unlock').addEventListener('submit', (e) => {
+                e.preventDefault();
+                let secret = FromBase64(urlParams.get('s'));
+                let key = FromBase64(document.querySelector('.unlock .secret').value);
 
+                let box = sodium.crypto_box_seal_open(secret, sodium.crypto_scalarmult_base(key), key);
 
-            document.querySelector('.lock .output_url').value = location.protocol + '//' + location.host + '/?p=' + myPublicKey + '&n=' + ToBase64(nonce) + '&s=' + ToBase64(box);
-        })
-        document.querySelector('.unlock').addEventListener('submit', (e) => {
-            e.preventDefault();
-            let secret = FromBase64(urlParams.get('s'));
-            let key = FromBase64(document.querySelector('.unlock .secret').value);
-            let theirPublic = FromBase64(theirPublicKey);
-            let nonce = FromBase64(urlParams.get('n'));
+                document.querySelector('.unlock .output').value = (new TextDecoder()).decode(box);
 
-            let box = nacl.box.open(secret, nonce, theirPublic, key);
+            })
 
-            document.querySelector('.unlock .output').value = (new TextDecoder()).decode(box);
+        })()
 
-        })
-
-        if (urlParams.has('p') && urlParams.has('s')) {
-            theirPublicKey = urlParams.get('p');
+        if (urlParams.has('s')) {
             document.querySelector('.unlock').classList.remove('hidden');
         } else if (urlParams.has('p')) {
             theirPublicKey = urlParams.get('p');
