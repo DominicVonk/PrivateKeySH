@@ -5,29 +5,40 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Key Ssshhh...</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="apple-mobile-web-app-title" content="PrivateKey.sh">
+    <meta name="application-name" content="PrivateKey.sh">
+    <meta name="msapplication-TileColor" content="#313131">
+    <meta name="theme-color" content="#ffffff">
+    <title>PrivateKey.sh</title>
 </head>
 
 <body>
     <div>
-        <h1><a href="/">🔐 Private Key Ssshhh...</a></h1>
         <form class="request hidden">
+            <h1><a href="/"><img src="logo.svg" width="250"></a></h1>
             <div class="before"></div>
             <h2>Request secret</h2>
             <div class="field"><label>Secret Key:</label>
                 <input type="text" class="secret" onfocus="this.select();" onmouseup="return false;" />
-                <small><b>Keep this secret key secure, you'll need this to unlock the secret.</b></small>
+                <small><b>Keep this key secure, you'll need this to unlock the secret.</b></small>
             </div>
-            <div class="field"><label>Password:</label>
+            <div class="field"><label>Password (<i>not required</i>):</label>
                 <input type="password" class="password" />
-                <small><b>Additional security layer to unlock the secret <u>not required</u></b></small>
+                <small><b>Optional security layer to protect the secret.</b></small>
             </div>
             <div class="field">
                 <label>Share Link:</label>
                 <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;" />
             </div>
+            <footer>Secrets should be secrets and <u>not</u> be saved on a server</footer>
         </form>
         <form class="lock hidden">
+            <h1><a href="/"><img src="logo.svg" width="250"></a></h1>
             <div class="before"></div>
             <h2>Lock secret</h2>
             <div class="field"><label>Secret:</label>
@@ -37,23 +48,25 @@
             <div class="field"><label>Share Link:</label>
                 <input type="text" class="output_url" onfocus="this.select();" onmouseup="return false;" />
             </div>
+            <footer>Secrets should be secrets and <u>not</u> be saved on a server</footer>
         </form>
         <form class="unlock hidden">
+            <h1><a href="/"><img src="logo.svg" width="250"></a></h1>
             <div class="before"></div>
             <h2>Unlock secret</h2>
             <div class="field"><label>Secret Key:</label>
                 <input type="text" class="secret" />
             </div>
-            <div class="field"><label>Password:</label>
+            <div class="field"><label>Password (<i>required if entered in request form</i>):</label>
                 <input type="password" class="password" />
-                <small><b>Additional security layer to unlock the secret <u>not required</u></b></small>
+                <small><b>Optional security layer to protect the secret.</b></small>
             </div>
             <button type="submit">Unlock</button>
             <div class="field"><label>Secret:</label>
                 <textarea class="output"></textarea>
             </div>
+            <footer>Secrets should be secrets and <u>not</u> be saved on a server</footer>
         </form>
-        <footer><b>Secrets should be secrets and <u>not</u> be saved on a server</b></footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/node-vibrant@3.2.1-alpha.1/dist/vibrant.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jedisct1/libsodium.js/dist/browsers/sodium.js"></script>
@@ -244,6 +257,8 @@
             overflow: hidden;
             width: calc(100% - 40px);
             padding: 24px;
+            top: 40px;
+            bottom: 40px;
             box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
             border-radius: 12px;
         }
@@ -265,17 +280,17 @@
 
         h1 {
 
+            text-align: center;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
         }
 
         footer {
             z-index: 1;
-            color: #fff;
+            color: #000;
             text-align: center;
             font-size: 12px;
             position: relative;
-            padding: 24px;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+            padding: 12px;
         }
 
         textarea {
@@ -296,6 +311,9 @@
 
         h2 {
             margin-bottom: 16px;
+            text-align: center;
+            font-weight: normal;
+            font-size: 24px;
         }
 
         button {
