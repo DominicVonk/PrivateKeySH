@@ -190,6 +190,18 @@
             font-size: 14px;
         }
 
+        body:before {
+            content: '';
+            display: block;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
         small {
             font-size: 12px;
             margin-bottom: 16px;
@@ -232,10 +244,12 @@
             font-size: 24px;
             font-weight: normal;
             padding: 24px;
+            position: relative;
         }
 
         h1,
         form {
+            z-index: 1;
             margin: 0 auto;
         }
 
@@ -245,9 +259,11 @@
         }
 
         footer {
+            z-index: 1;
             color: #fff;
             text-align: center;
             font-size: 12px;
+            position: relative;
             padding: 24px;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
         }
