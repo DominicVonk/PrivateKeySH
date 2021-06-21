@@ -227,15 +227,25 @@
             z-index: -1;
         }
 
+        form .before:before {
+            content: '';
+            display: block;
+            position: absolute;
+            height: 100vh;
+            width: 100vw;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
         form {
             position: relative;
             max-width: 440px;
             overflow: hidden;
             width: calc(100% - 40px);
-            background: rgba(255, 255, 255, 0.4);
             padding: 24px;
             box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
-            border-radius: 24px;
+            border-radius: 12px;
         }
 
         h1 {
